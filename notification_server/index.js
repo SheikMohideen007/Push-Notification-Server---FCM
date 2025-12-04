@@ -10,11 +10,32 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Init firebase-admin
-const serviceAccountPath = process.env.SERVICE_ACCOUNT_PATH || './serviceAccountKey.json';
-admin.initializeApp({
-  credential: admin.credential.cert(require(serviceAccountPath)),
-});
+// const serviceAccountPath = process.env.SERVICE_ACCOUNT_PATH || './serviceAccountKey.json';
+// admin.initializeApp({
+//   credential: admin.credential.cert(require(serviceAccountPath)),
+// });
+function initFirebaseAdmin() {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+    // If deployed on Render (service account stored in ENV)
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
 
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+
+    console.log("Firebase initialized from FIREBASE_SERVICE_ACCOUNT_JSON (Render)");
+  } else {
+    // Local development fallback
+    const serviceAccountPath = process.env.SERVICE_ACCOUNT_PATH || './serviceAccountKey.json';
+
+    admin.initializeApp({
+      credential: admin.credential.cert(require(serviceAccountPath))
+    });
+
+    console.log("Firebase initialized from local serviceAccountKey.json");
+  }
+}
+initFirebaseAdmin();
 // In-memory token store (for demo). Replace with DB in prod.
 const tokens = new Set();
 
