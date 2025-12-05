@@ -113,10 +113,12 @@ app.post('/send', async (req, res) => {
   
       // SEND DATA BLOCK (required for navigation)
       data: {
-        ...Object.keys(data).reduce((acc, key) => ({
-          ...acc,
-          [key]: String(data[key])
-        }), {}),
+        // ...Object.keys(data).reduce((acc, key) => ({
+        //   ...acc,
+        //   [key]: String(data[key])
+        // }), {}),
+        screen: data.screen || "",
+        id: data.id || "",
         click_action: 'FLUTTER_NOTIFICATION_CLICK'
       },
   
